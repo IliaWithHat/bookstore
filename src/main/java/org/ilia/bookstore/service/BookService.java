@@ -20,11 +20,12 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
 
-    public Optional<BookDto> create(BookDto bookDto) {
+    public BookDto create(BookDto bookDto) {
         return Optional.of(bookDto)
                 .map(bookMapper::bookDtoToBook)
                 .map(bookRepository::save)
-                .map(bookMapper::bookToBookDto);
+                .map(bookMapper::bookToBookDto)
+                .orElseThrow();
     }
 
     public List<BookDto> findAll() {
@@ -39,7 +40,7 @@ public class BookService {
     }
 
     public Optional<BookDto> update(BookDto bookDto) {
-        return bookRepository.findById(bookDto.getId())
+        return bookRepository.findById(UUID.fromString(bookDto.getId()))
                 .map(book -> bookMapper.copyBookDtoToBook(bookDto, book))
                 .map(bookRepository::save)
                 .map(bookMapper::bookToBookDto);

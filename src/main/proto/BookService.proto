@@ -23,7 +23,7 @@ message CreateBookRequest {
 }
 
 message CreateBookResponse {
-  string id = 1;
+  Book book = 1;
 }
 
 message FindAllBooksResponse {
@@ -52,10 +52,6 @@ message DeleteBookByIdRequest {
 
 message DeleteBookByIdResponse {
   bool isDeleted = 1;
-}
-
-message ErrorResponse {
-  string error = 1;
 }
 
 service BookService {
