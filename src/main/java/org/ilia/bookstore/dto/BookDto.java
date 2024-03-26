@@ -5,9 +5,11 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Value;
 import org.hibernate.validator.constraints.ISBN;
 import org.hibernate.validator.constraints.UUID;
+import org.ilia.bookstore.validation.annotation.UniqueIsbn;
 import org.ilia.bookstore.validation.groups.UpdateBook;
 
 @Value
+@UniqueIsbn
 public class BookDto {
 
     @UUID(message = "Enter valid UUID", groups = UpdateBook.class)

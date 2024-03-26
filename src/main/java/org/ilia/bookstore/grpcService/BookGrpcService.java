@@ -41,9 +41,8 @@ public class BookGrpcService extends BookServiceImplBase {
             return;
         }
 
-        Book savedBook = bookMapper.bookDtoToGrpcBook(bookService.create(bookFromRequest));
         responseObserver.onNext(CreateBookResponse.newBuilder()
-                .setBook(savedBook)
+                .setBook(bookMapper.bookDtoToGrpcBook(bookService.create(bookFromRequest)))
                 .build());
         responseObserver.onCompleted();
     }
@@ -101,8 +100,7 @@ public class BookGrpcService extends BookServiceImplBase {
         bookValidator.validateUUID(request.getId())
                 .ifPresent(error -> handleError(responseObserver, Code.INVALID_ARGUMENT, error));
 
-        boolean isDeleted = bookService.delete(UUID.fromString(request.getId()));
-        if (isDeleted) {
+        if (bookService.delete(UUID.fromString(request.getId()))) {
             responseObserver.onNext(DeleteBookByIdResponse.newBuilder()
                     .setIsDeleted(true)
                     .build());
