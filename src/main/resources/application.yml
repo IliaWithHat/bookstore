@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: bookstore
+  datasource:
+    url: jdbc:postgresql://localhost:5432/book_repository
+    username: postgres
+    password: postgres

@@ -1,6 +1,8 @@
 syntax = "proto3";
 package org.ilia.grpc;
 
+import "google/protobuf/empty.proto";
+
 message Book {
   string id = 1;
   string title = 2;
@@ -22,6 +24,10 @@ message CreateBookRequest {
 
 message CreateBookResponse {
   string id = 1;
+}
+
+message FindAllBooksResponse {
+  repeated Book books = 1;
 }
 
 message FindBookByIdRequest {
@@ -54,6 +60,7 @@ message ErrorResponse {
 
 service BookService {
   rpc CreateBook (CreateBookRequest) returns (CreateBookResponse);
+  rpc FindAllBooks (google.protobuf.Empty) returns (FindAllBooksResponse);
   rpc FindBookById (FindBookByIdRequest) returns (FindBookByIdResponse);
   rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse);
   rpc DeleteBook (DeleteBookByIdRequest) returns (DeleteBookByIdResponse);
