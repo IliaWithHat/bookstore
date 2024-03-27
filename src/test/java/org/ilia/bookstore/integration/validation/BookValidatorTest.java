@@ -44,7 +44,7 @@ class BookValidatorTest extends IntegrationTestBase {
                         List.of(Default.class),
                         Collections.emptyList()),
                 Arguments.of(
-                        new BookDto("", "123", "123", "9780140447927", 1),
+                        new BookDto("", "123", "123", "9781451673319", 1),
                         List.of(Default.class),
                         List.of(ISBN_ALREADY_EXIST)),
                 Arguments.of(
@@ -60,11 +60,11 @@ class BookValidatorTest extends IntegrationTestBase {
                         List.of(Default.class, UpdateBook.class),
                         Collections.emptyList()),
                 Arguments.of(
-                        new BookDto("a49d293a-36c2-42c4-99de-9cf71bf5791d", "123", "123", "9780140447927", 1),
+                        new BookDto("a49d293a-36c2-42c4-99de-9cf71bf5791d", "123", "123", "9781451673319", 1),
                         List.of(Default.class, UpdateBook.class),
                         List.of(ISBN_ALREADY_EXIST)),
                 Arguments.of(
-                        new BookDto("4799b50b-934f-4bc8-9a4b-10e26b53a033", "123", "123", "9780140447927", 1),
+                        new BookDto("20404a4a-b8e0-4f86-ae36-64956b9f6c0c", "123", "123", "9781451673319", 1),
                         List.of(Default.class, UpdateBook.class),
                         Collections.emptyList()),
                 Arguments.of(

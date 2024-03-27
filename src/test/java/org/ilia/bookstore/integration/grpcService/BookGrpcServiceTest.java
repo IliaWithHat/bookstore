@@ -3,6 +3,7 @@ package org.ilia.bookstore.integration.grpcService;
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import org.ilia.bookstore.dto.BookDto;
 import org.ilia.bookstore.integration.IntegrationTestBase;
 import org.ilia.bookstore.mapper.BookMapper;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BookGrpcServiceTest extends IntegrationTestBase {
 
@@ -34,21 +35,29 @@ class BookGrpcServiceTest extends IntegrationTestBase {
             new BookDto("20404a4a-b8e0-4f86-ae36-64956b9f6c0c", "Fahrenheit 451", "Ray Bradbury", "9781451673319", 1)
     );
 
-//    @Test
-//    void createBook() {
-//    }
-
     @Test
-    void findAllBooks() {
+    void createInvalidBook() {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
                 .usePlaintext()
                 .build();
-        List<BookDto> response = BookServiceGrpc.newBlockingStub(channel)
-                .findAllBooks(Empty.newBuilder().build())
-                .getBooksList().stream()
-                .map(bookMapper::grpcBookToBookDto)
-                .toList();
-        assertThat(response).hasSameElementsAs(allBooks);
+        assertThrows(StatusRuntimeException.class, () -> BookServiceGrpc.newBlockingStub(channel)
+                .createBook(BookServiceOuterClass.CreateBookRequest.newBuilder()
+                        .build()));
+        channel.shutdown();
+    }
+
+    @Test
+    void findBookById() {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
+                .usePlaintext()
+                .build();
+        BookServiceOuterClass.Book response = BookServiceGrpc.newBlockingStub(channel)
+                .findBookById(BookServiceOuterClass.FindBookByIdRequest.newBuilder()
+                        .setId("20404a4a-b8e0-4f86-ae36-64956b9f6c0c")
+                        .build())
+                .getBook();
+        assertEquals(allBooks.get(4), bookMapper.grpcBookToBookDto(response));
+        channel.shutdown();
     }
 
     @Test
@@ -77,5 +86,6 @@ class BookGrpcServiceTest extends IntegrationTestBase {
         ArrayList<BookDto> copyAllBooks = new ArrayList<>(allBooks);
         copyAllBooks.remove(0);
         assertThat(afterDeleting).hasSameElementsAs(copyAllBooks);
+        channel.shutdown();
     }
 }
