@@ -2,6 +2,7 @@ package org.ilia.bookstore.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Value;
 import org.hibernate.validator.constraints.ISBN;
 import org.hibernate.validator.constraints.UUID;
@@ -16,9 +17,11 @@ public class BookDto {
     String id;
 
     @NotBlank(message = "Enter title")
+    @Size(max = 64, message = "Title is too long")
     String title;
 
     @NotBlank(message = "Enter author")
+    @Size(max = 64, message = "Author name is too long")
     String author;
 
     @ISBN(message = "Enter valid ISBN")

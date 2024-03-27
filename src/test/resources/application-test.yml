@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: test
+    password: test
+  sql:
+    init:
+      mode: always
+      schema-locations: sql/init.sql
+      data-locations: sql/data.sql
+grpc:
+  port: 0
