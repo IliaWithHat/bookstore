@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16.1
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: book_repository
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./src/main/resources/sql:/docker-entrypoint-initdb.d
+      - bookstore-data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+  app:
+    build: .
+    image: bookstore-image
+    container_name: bookstore
+    depends_on:
+      - postgres
+    ports:
+      - "6565:6565"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/book_repository
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+volumes:
+  bookstore-data:
+    name: book-repository-data
