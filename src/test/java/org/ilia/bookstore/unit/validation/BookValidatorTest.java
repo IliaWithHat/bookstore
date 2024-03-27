@@ -26,8 +26,8 @@ class BookValidatorTest {
     @ParameterizedTest
     @MethodSource("uuidProvider")
     void testValidateUUID(String uuid, boolean isValid) {
-        Optional<String> result = bookValidator.validateUUID(uuid);
-        assertEquals(isValid, result.isEmpty());
+        Optional<String> error = bookValidator.validateUUID(uuid);
+        assertEquals(isValid, error.isEmpty());
     }
 
     static Stream<Arguments> uuidProvider() {

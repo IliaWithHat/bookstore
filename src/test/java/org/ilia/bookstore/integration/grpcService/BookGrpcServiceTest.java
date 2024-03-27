@@ -9,6 +9,8 @@ import org.ilia.bookstore.integration.IntegrationTestBase;
 import org.ilia.bookstore.mapper.BookMapper;
 import org.ilia.grpc.BookServiceGrpc;
 import org.ilia.grpc.BookServiceOuterClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ class BookGrpcServiceTest extends IntegrationTestBase {
     @LocalRunningGrpcPort
     int port;
 
+    private ManagedChannel channel;
+
     List<BookDto> allBooks = List.of(
             new BookDto("4799b50b-934f-4bc8-9a4b-10e26b53a033", "The Idiot", "Fyodor Dostoevsky", "9780140447927", 1),
             new BookDto("eccc40cd-082e-49af-b5d9-c4dbef1d30b6", "1984", "George Orwell", "9780451524935", 1),
@@ -35,36 +39,47 @@ class BookGrpcServiceTest extends IntegrationTestBase {
             new BookDto("20404a4a-b8e0-4f86-ae36-64956b9f6c0c", "Fahrenheit 451", "Ray Bradbury", "9781451673319", 1)
     );
 
-    @Test
-    void createInvalidBook() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
+    @BeforeEach
+    void setUp() {
+        channel = ManagedChannelBuilder.forAddress("localhost", port)
                 .usePlaintext()
                 .build();
-        assertThrows(StatusRuntimeException.class, () -> BookServiceGrpc.newBlockingStub(channel)
-                .createBook(BookServiceOuterClass.CreateBookRequest.newBuilder()
-                        .build()));
+    }
+
+    @AfterEach
+    void tearDown() {
         channel.shutdown();
     }
 
     @Test
+    void findAll() {
+        List<BookDto> booksFromResponse = BookServiceGrpc.newBlockingStub(channel)
+                .findAllBooks(Empty.newBuilder().build())
+                .getBooksList().stream()
+                .map(bookMapper::grpcBookToBookDto)
+                .toList();
+        assertThat(booksFromResponse).hasSameElementsAs(allBooks);
+    }
+
+    @Test
+    void createInvalidBook() {
+        assertThrows(StatusRuntimeException.class, () -> BookServiceGrpc.newBlockingStub(channel)
+                .createBook(BookServiceOuterClass.CreateBookRequest.newBuilder()
+                        .build()));
+    }
+
+    @Test
     void findBookById() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
-                .usePlaintext()
-                .build();
         BookServiceOuterClass.Book response = BookServiceGrpc.newBlockingStub(channel)
                 .findBookById(BookServiceOuterClass.FindBookByIdRequest.newBuilder()
                         .setId("20404a4a-b8e0-4f86-ae36-64956b9f6c0c")
                         .build())
                 .getBook();
         assertEquals(allBooks.get(4), bookMapper.grpcBookToBookDto(response));
-        channel.shutdown();
     }
 
     @Test
     void deleteBook() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
-                .usePlaintext()
-                .build();
         BookServiceGrpc.BookServiceBlockingStub stub = BookServiceGrpc.newBlockingStub(channel);
         List<BookDto> beforeDeleting = stub
                 .findAllBooks(Empty.newBuilder().build())
@@ -86,6 +101,5 @@ class BookGrpcServiceTest extends IntegrationTestBase {
         ArrayList<BookDto> copyAllBooks = new ArrayList<>(allBooks);
         copyAllBooks.remove(0);
         assertThat(afterDeleting).hasSameElementsAs(copyAllBooks);
-        channel.shutdown();
     }
 }

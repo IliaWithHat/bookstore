@@ -30,10 +30,13 @@ class BookValidatorTest extends IntegrationTestBase {
     static final String INVALID_ISBN = "Enter valid ISBN";
     static final String NEGATIVE_QUANTITY = "Quantity can't be negative";
 
+    static Class<?>[] createBookGroup = new Class<?>[]{Default.class};
+    static Class<?>[] updateBookGroup = new Class<?>[]{Default.class, UpdateBook.class};
+
     @ParameterizedTest
     @MethodSource("bookDtoProvider")
-    void validateBookDto(BookDto bookDto, List<Class<?>> groups, List<String> expectedErrors) {
-        List<String> errors = bookValidator.validateBookDto(bookDto, groups.toArray(new Class<?>[0]));
+    void validateBookDto(BookDto bookDto, Class<?>[] groups, List<String> expectedErrors) {
+        List<String> errors = bookValidator.validateBookDto(bookDto, groups);
         assertThat(errors).hasSameElementsAs(expectedErrors);
     }
 
@@ -41,39 +44,39 @@ class BookValidatorTest extends IntegrationTestBase {
         return Stream.of(
                 Arguments.of(
                         new BookDto("", "123", "123", "9780765386694", 1),
-                        List.of(Default.class),
+                        createBookGroup,
                         Collections.emptyList()),
                 Arguments.of(
                         new BookDto("", "123", "123", "9781451673319", 1),
-                        List.of(Default.class),
+                        createBookGroup,
                         List.of(ISBN_ALREADY_EXIST)),
                 Arguments.of(
                         new BookDto("", "", "", "", -1),
-                        List.of(Default.class),
+                        createBookGroup,
                         List.of(BLANK_TITLE, BLANK_AUTHOR, INVALID_ISBN, NEGATIVE_QUANTITY)),
                 Arguments.of(
                         new BookDto("", "jR#p7L@6*dQfG2ZsVz9T!nXbMk3yDmCvEoFqW4lN5uY8A1IgO0hKcHwSePtRx1234", "jR#p7L@6*dQfG2ZsVz9T!nXbMk3yDmCvEoFqW4lN5uY8A1IgO0hKcHwSePtRx1234", "9780765386694", 1),
-                        List.of(Default.class),
+                        createBookGroup,
                         List.of(TOO_LONG_TITLE, TOO_LONG_AUTHOR)),
                 Arguments.of(
                         new BookDto("a49d293a-36c2-42c4-99de-9cf71bf5791d", "123", "123", "9780765386694", 1),
-                        List.of(Default.class, UpdateBook.class),
+                        updateBookGroup,
                         Collections.emptyList()),
                 Arguments.of(
                         new BookDto("a49d293a-36c2-42c4-99de-9cf71bf5791d", "123", "123", "9781451673319", 1),
-                        List.of(Default.class, UpdateBook.class),
+                        updateBookGroup,
                         List.of(ISBN_ALREADY_EXIST)),
                 Arguments.of(
                         new BookDto("20404a4a-b8e0-4f86-ae36-64956b9f6c0c", "123", "123", "9781451673319", 1),
-                        List.of(Default.class, UpdateBook.class),
+                        updateBookGroup,
                         Collections.emptyList()),
                 Arguments.of(
                         new BookDto("", "", "", "", -1),
-                        List.of(Default.class, UpdateBook.class),
+                        updateBookGroup,
                         List.of(INVALID_UUID, BLANK_TITLE, BLANK_AUTHOR, INVALID_ISBN, NEGATIVE_QUANTITY)),
                 Arguments.of(
                         new BookDto("", "jR#p7L@6*dQfG2ZsVz9T!nXbMk3yDmCvEoFqW4lN5uY8A1IgO0hKcHwSePtRx1234", "jR#p7L@6*dQfG2ZsVz9T!nXbMk3yDmCvEoFqW4lN5uY8A1IgO0hKcHwSePtRx1234", "9780765386694", 1),
-                        List.of(Default.class, UpdateBook.class),
+                        updateBookGroup,
                         List.of(INVALID_UUID, TOO_LONG_TITLE, TOO_LONG_AUTHOR))
         );
     }
