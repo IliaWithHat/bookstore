@@ -38,6 +38,14 @@ message FindBookByIdResponse {
   Book book = 1;
 }
 
+message FindBookByTitleRequest {
+  string title = 1;
+}
+
+message FindBookByTitleResponse {
+  repeated Book books = 1;
+}
+
 message UpdateBookRequest {
   Book book = 1;
 }
@@ -58,6 +66,7 @@ service BookService {
   rpc CreateBook (CreateBookRequest) returns (CreateBookResponse);
   rpc FindAllBooks (google.protobuf.Empty) returns (FindAllBooksResponse);
   rpc FindBookById (FindBookByIdRequest) returns (FindBookByIdResponse);
+  rpc FindBooksByTitle (FindBookByTitleRequest) returns (FindBookByTitleResponse);
   rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse);
   rpc DeleteBook (DeleteBookByIdRequest) returns (DeleteBookByIdResponse);
 }

@@ -39,6 +39,12 @@ public class BookService {
                 .map(bookMapper::bookToBookDto);
     }
 
+    public List<BookDto> findByTitle(String title) {
+        return bookRepository.findByTitleEqualsIgnoreCase(title).stream()
+                .map(bookMapper::bookToBookDto)
+                .toList();
+    }
+
     public Optional<BookDto> update(BookDto bookDto) {
         return bookRepository.findById(UUID.fromString(bookDto.getId()))
                 .map(book -> bookMapper.copyBookDtoToBook(bookDto, book))

@@ -75,6 +75,17 @@ public class BookGrpcService extends BookServiceImplBase {
     }
 
     @Override
+    public void findBooksByTitle(FindBookByTitleRequest request, StreamObserver<FindBookByTitleResponse> responseObserver) {
+        List<BookServiceOuterClass.Book> books = bookService.findByTitle(request.getTitle()).stream()
+                .map(bookMapper::bookDtoToGrpcBook)
+                .toList();
+        responseObserver.onNext(FindBookByTitleResponse.newBuilder()
+                .addAllBooks(books)
+                .build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void updateBook(UpdateBookRequest request, StreamObserver<UpdateBookResponse> responseObserver) {
         BookDto bookFromRequest = bookMapper.grpcBookToBookDto(request.getBook());
 
