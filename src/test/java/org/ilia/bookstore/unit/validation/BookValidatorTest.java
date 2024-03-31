@@ -1,27 +1,18 @@
 package org.ilia.bookstore.unit.validation;
 
-import jakarta.validation.Validator;
 import org.ilia.bookstore.validation.BookValidator;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
 class BookValidatorTest {
 
-    @Mock
-    Validator validator;
-    @InjectMocks
-    BookValidator bookValidator;
+    BookValidator bookValidator = new BookValidator(null);
 
     @ParameterizedTest
     @MethodSource("uuidProvider")
