@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +38,9 @@ class BookGrpcServiceTest extends GrpcServerTestBase {
 
     @Test
     void findAll() {
-        List<BookDto> booksFromResponse = stub
-                .findAllBooks(Empty.newBuilder().build())
-                .getBooksList().stream()
-                .map(bookMapper::grpcBookToBookDto)
-                .toList();
+        List<BookDto> booksFromResponse = new ArrayList<>();
+        stub.findAllBooks(Empty.newBuilder().build())
+                .forEachRemaining(book -> booksFromResponse.add(bookMapper.grpcBookToBookDto(book.getBook())));
         assertThat(booksFromResponse).hasSameElementsAs(ALL_BOOKS_IN_DB);
     }
 
@@ -57,13 +56,11 @@ class BookGrpcServiceTest extends GrpcServerTestBase {
 
     @Test
     void findBooksByTitle() {
-        List<BookDto> bookDtoFromRequest = stub
-                .findBooksByTitle(BookServiceOuterClass.FindBookByTitleRequest.newBuilder()
+        List<BookDto> booksFromResponse = new ArrayList<>();
+        stub.findBooksByTitle(BookServiceOuterClass.FindBookByTitleRequest.newBuilder()
                         .setTitle("The Three-Body Problem")
                         .build())
-                .getBooksList().stream()
-                .map(bookMapper::grpcBookToBookDto)
-                .toList();
-        assertThat(bookDtoFromRequest).contains(ALL_BOOKS_IN_DB.get(2));
+                .forEachRemaining(book -> booksFromResponse.add(bookMapper.grpcBookToBookDto(book.getBook())));
+        assertThat(booksFromResponse).contains(ALL_BOOKS_IN_DB.get(2));
     }
 }

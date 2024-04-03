@@ -13,7 +13,6 @@ import org.ilia.bookstore.service.BookService;
 import org.ilia.bookstore.validation.BookValidator;
 import org.ilia.bookstore.validation.groups.UpdateBook;
 import org.ilia.grpc.BookServiceGrpc.BookServiceImplBase;
-import org.ilia.grpc.BookServiceOuterClass;
 import org.ilia.grpc.BookServiceOuterClass.*;
 import org.lognet.springboot.grpc.GRpcService;
 
@@ -49,12 +48,10 @@ public class BookGrpcService extends BookServiceImplBase {
 
     @Override
     public void findAllBooks(Empty request, StreamObserver<FindAllBooksResponse> responseObserver) {
-        List<BookServiceOuterClass.Book> books = bookService.findAll().stream()
+        bookService.findAll().stream()
                 .map(bookMapper::bookDtoToGrpcBook)
-                .toList();
-        responseObserver.onNext(FindAllBooksResponse.newBuilder()
-                .addAllBooks(books)
-                .build());
+                .map(book -> FindAllBooksResponse.newBuilder().setBook(book).build())
+                .forEach(responseObserver::onNext);
         responseObserver.onCompleted();
     }
 
@@ -76,12 +73,10 @@ public class BookGrpcService extends BookServiceImplBase {
 
     @Override
     public void findBooksByTitle(FindBookByTitleRequest request, StreamObserver<FindBookByTitleResponse> responseObserver) {
-        List<BookServiceOuterClass.Book> books = bookService.findByTitle(request.getTitle()).stream()
+        bookService.findByTitle(request.getTitle()).stream()
                 .map(bookMapper::bookDtoToGrpcBook)
-                .toList();
-        responseObserver.onNext(FindBookByTitleResponse.newBuilder()
-                .addAllBooks(books)
-                .build());
+                .map(book -> FindBookByTitleResponse.newBuilder().setBook(book).build())
+                .forEach(responseObserver::onNext);
         responseObserver.onCompleted();
     }
 
