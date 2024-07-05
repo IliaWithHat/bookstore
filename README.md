@@ -1,6 +1,6 @@
 ## Bookstore
 
-Example of usage gRPC. Currently implemented all CRUD operations for one entity on the MVC architecture.
+Example of usage gRPC. Currently implemented all CRUD operations for one entity.
 
 ## Requirements
 
