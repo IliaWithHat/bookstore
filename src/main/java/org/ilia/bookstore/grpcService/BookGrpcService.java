@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.ilia.bookstore.constrant.ErrorMessages.BOOK_NOT_FOUND;
+
 @GRpcService
 @RequiredArgsConstructor
 public class BookGrpcService extends BookServiceImplBase {
@@ -27,8 +29,6 @@ public class BookGrpcService extends BookServiceImplBase {
     private final BookService bookService;
     private final BookMapper bookMapper;
     private final BookValidator bookValidator;
-
-    public static final String BOOK_NOT_FOUND = "Book not found";
 
     @Override
     public void createBook(CreateBookRequest request, StreamObserver<CreateBookResponse> responseObserver) {
